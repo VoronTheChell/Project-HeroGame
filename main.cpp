@@ -1,10 +1,11 @@
 #include <iostream>
 #include <windows.h>
+#include <memory>
 #include <vector>
 
 using namespace std;
 
-static void SetColor(int color) // От себя добавление ХЫ
+static void SetColor(int color)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
@@ -12,71 +13,54 @@ static void SetColor(int color) // От себя добавление ХЫ
 // Game v0.0.5.1
 
 // Домашнее Задание: сделать диаграмму которую ты пропустил ДУРЕНЬ! (дедлайн: с 08.10 по 11.10 - НЕ ВКЛЮЧИТЕЛЬНО)
-// И незабудь сделать все TODO которые ты здесь пометил! (дедлайн: с 08.10 по 11.10 - НЕ ВКЛЮЧИТЕЛЬНО)
 
-// TODO: Реализовать проверку условия, так что бы класс именно выбирался а не тупо сносили Create() в каждом из классе
+// NPC является абстрактным классом, поскольку содержит чисто виртуальные функции.
+
 class NPC
 {
 protected:
 	string name{ "name_npc" };
+	string className{ "NPC" };
+
 	unsigned int damage{ 2 };
 	unsigned int health{ 10 };
 	unsigned int armor{ 5 };
+
 	short lvl = 1;
 
-private:
-	bool isEnemy = true;
+	virtual void PrepareCharacter() = 0;
+	virtual void ShowEquipment() = 0;
 
 public:
-	// TODO: Подправь (надо продумать данные механики и доработать)
-	unsigned int GetDamage() { return damage; };
-	unsigned int GetHealth() { return health; };
-	void SetHealth(unsigned int health) { this->health = health; };
 
-	// Создать NPC нельзя, => весь класс - виртуальным!
-	virtual void Create()
+	void Create()
 	{
-		/*
-		cout << "Вы создали война!\nВведите имя вашего персонажа: ", cin >> name, "\n";
+		SetColor(11);
+		cout << "(i) Инфо: ";
+		SetColor(7);
 
-		Weapon weapon;
-		weapon.damage = 1;
-		weapon.name = "Кулаки";
-		weapons.push_back(weapon);
+		cout << "Вы создали " << className << "!\n";
+		cout << "Введите имя вашего персонажа: ";
+		cin >> name;
+
+		PrepareCharacter();
 
 		GetInfo();
-		GetWeapon();
-		*/
+		ShowEquipment();
 	}
 
 	virtual void GetInfo()
 	{
 		cout << "Имя героя: " << name << endl;
+		cout << "Класс: " << className << endl;
 		cout << "Уровень героя: " << lvl << endl;
 		cout << "Здоровье: " << health << endl;
 		cout << "Броня: " << armor << endl;
 		cout << "Урон: " << damage << endl;
-
-		// cout << "Сила: " << strength << endl;
 	}
 
-	// you my friend now ~()`P
-	friend void TakeDamage(unique_ptr<NPC> npc, unsigned int damage);
+	friend void TakeDamage(NPC* npc, unsigned int damage);
 
-	void LvLUp()
-	{
-		cout << name << " - получил новый уровень!" << endl;
-		lvl++;
-		Relaculate();
-	}
-
-	void Relaculate()
-	{
-		damage += (1 + lvl * 0.1);
-		health += (1 + lvl * 0.05);
-		armor += (1 + lvl * 0.75);
-	}
-	
 	virtual ~NPC() = default;
 };
 
@@ -88,60 +72,50 @@ struct Weapon
 
 class Warrior : virtual public NPC
 {
-protected:
-	short strength{ 21 };
-	vector<Weapon> weapons;
+	protected:
+		short strength{ 21 };
+		vector<Weapon> weapons;
 
-public:
-	// Конструктор по умолчанию
-	Warrior()
-	{
-		damage = 20;
-		health = 30;
-		armor = 15;
-	}
+		void PrepareCharacter() override
+		{
+			Weapon weapon;
 
-	// Кастомный конструтор
-	Warrior(string name, unsigned int lvl)
-	{
-		this->name = name; // Такой способ задания поля уместен тока для Setter'a
-		for (size_t i = 0; i < lvl; i++)
-			LvLUp();
+			weapon.damage = 1;
+			weapon.name = "Кулаки";
 
-		// this->lvl = lvl; // this - он указывает на конкретный экз. класса
-	}
+			weapons.push_back(weapon);
+		}
 
-	void Create() override
-	{
-		SetColor(11);
-		cout << "(i) Инфо: ";
-		SetColor(7);
-		cout << "Вы создали война!\nВведите имя вашего персонажа: ", cin >> name, "\n";
+		void ShowEquipment() override
+		{
+			GetWeapon();
+		}
 
-		Weapon weapon;
-		weapon.damage = 1;
-		weapon.name = "Кулаки";
-		weapons.push_back(weapon);
+	public:
 
-		GetInfo();
-		GetWeapon();
+		Warrior()
+		{
+			className = "воина";
 
-	}
+			damage = 20;
+			health = 30;
+			armor = 15;
+		}
 
-	void GetInfo()
-	{
-		NPC::GetInfo();
-		cout << "Сила: " << strength << endl;
-	}
+		void GetInfo() override
+		{
+			NPC::GetInfo();
+			cout << "Сила: " << strength << endl;
+		}
 
-	void GetWeapon()
-	{
-		SetColor(11);
-		cout << "(i) Инфо: ";
-		SetColor(7);
-		cout << name << " взял в руки оружие: " << weapons[0].name;
-		cout << " добавка к урону = " << weapons[0].damage << endl;
-	}
+		void GetWeapon()
+		{
+			cout << name << " взял в руки оружие: "
+				<< weapons[0].name << endl;
+
+			cout << "Добавка к урону: "
+				<< weapons[0].damage << endl;
+		}
 };
 
 struct Spell
@@ -152,127 +126,152 @@ struct Spell
 
 class Wizard : virtual public NPC
 {
-protected:
-	short intellect{ 29 };
-	vector<Spell> spells;
+	protected:
+		short intellect{ 29 };
+		vector<Spell> spells;
 
-public:
-	Wizard()
-	{
-		damage = 27;
-		health = 21;
-		armor = 10;
-	}
+		void PrepareCharacter() override
+		{
+			Spell spell;
 
-	void Create() override
-	{
-		cout << "Вы создали волшебника!\nВведите имя вашего персонажа: ", cin >> name, "\n";
+			spell.damage = 2;
+			spell.name = "Вспышка";
 
-		Spell spell;
-		spell.damage = 2;
-		spell.name = "Вспышка";
-		spells.push_back(spell);
+			spells.push_back(spell);
+		}
 
-		GetInfo();
-		LearnSpell();
-	};
+		void ShowEquipment() override
+		{
+			LearnSpell();
+		}
 
-	void GetInfo()
-	{
-		NPC::GetInfo();
-		cout << "Интеллект: " << intellect << endl;
-	};
+	public:
 
-	void LearnSpell()
-	{
+		Wizard()
+		{
+			className = "волшебника";
 
-		cout << name << " изучил заклинание " << spells[0].name;
-		cout << " добавка к урону = " << spells[0].damage << endl;
-	};
+			damage = 27;
+			health = 21;
+			armor = 10;
+		}
+
+		void GetInfo() override
+		{
+			NPC::GetInfo();
+			cout << "Интеллект: " << intellect << endl;
+		}
+
+		void LearnSpell()
+		{
+			cout << name << " изучил заклинание "
+				<< spells[0].name << endl;
+
+			cout << "Добавка к урону: "
+				<< spells[0].damage << endl;
+		}
 };
 
 class Evil : public NPC
 {
-public:
-	Evil()
-	{
-		name = "evil_npc";
-		damage = 5;
-		armor = 3;
-	}
+	protected:
+		// На будующее
+		void PrepareCharacter() override
+		{}
 
-	// ВНИМАНИЕ: ДАННЫЙ ПРИМЕР ИСПОЛЬЗУЕТСЯ В ОБРОЗОВАТЕЛЬНЫХ ЦЕЛЯХ, НЕ ИСПОЛЬЗОВАТЬ НА ПРАКТИКЕ!
+		void ShowEquipment() override
+		{}
 
-	Evil(string name) // Делегирование конструтора (т.е. вызывается в начале базовых)
-	{
-		this->name = name;
-	}
+	public:
+		Evil()
+		{
+			name = "evil_npc";
+			damage = 5;
+			armor = 3;
+		}
 
-	Evil(string name, unsigned int damage) : Evil(name)
-	{
-		this->damage = damage;
-	}
+		// ВНИМАНИЕ: ДАННЫЙ ПРИМЕР ИСПОЛЬЗУЕТСЯ В ОБРОЗОВАТЕЛЬНЫХ ЦЕЛЯХ, НЕ ИСПОЛЬЗОВАТЬ НА ПРАКТИКЕ!
 
-	Evil(string name, unsigned int damage, unsigned int health) : Evil(name, damage)
-	{
-		this->health = health;
-	}
+		Evil(string name) // Делегирование конструтора (т.е. вызывается в начале базовых)
+		{
+			this->name = name;
+		}
 
-	Evil(string name, unsigned int damage, unsigned int health, unsigned int armor) : Evil(name, damage, health)
-	{
-		this->armor = armor;
-	}
+		Evil(string name, unsigned int damage) : Evil(name)
+		{
+			this->damage = damage;
+		}
+
+		Evil(string name, unsigned int damage, unsigned int health) : Evil(name, damage)
+		{
+			this->health = health;
+		}
+
+		Evil(string name, unsigned int damage, unsigned int health, unsigned int armor) : Evil(name, damage, health)
+		{
+			this->armor = armor;
+		}
 };
 
-// TODO: Исправить проблему с спавном Воина и Волшебника в Поладине
 // Множественное наследие
 class Paladin : public Warrior, public Wizard
 {
-public:
-	Paladin()
-	{
-		intellect = 25;
-		strength = 19;
-		health = 25;
-		damage = 25;
-	}
+protected:
 
-	void Create() override
+	void PrepareCharacter() override
 	{
-		// TODO: Реализовать это в NPC (храните название класса в каком-то поле)
-		cout << "Вы создали Паладина!\nВведите имя вашего персонажа: ", cin >> name, "\n";
-
 		Weapon weapon;
 		weapon.damage = 5;
-		weapon.name = "Мечь новичка";
+		weapon.name = "Меч новичка";
+
 		weapons.push_back(weapon);
+
 
 		Spell spell;
 		spell.damage = 2;
 		spell.name = "Божий шок";
+
 		spells.push_back(spell);
+	}
 
-		GetInfo();
-
+	void ShowEquipment() override
+	{
 		GetWeapon();
 		LearnSpell();
-	};
+	}
 
-	void GetInfo()
+public:
+
+	Paladin()
 	{
-		Warrior::GetInfo();
+		className = "паладина";
+
+		intellect = 25;
+		strength = 19;
+
+		health = 25;
+		damage = 25;
+		armor = 20;
+	}
+
+	void GetInfo() override
+	{
+		NPC::GetInfo();
+
+		cout << "Сила: " << strength << endl;
 		cout << "Интеллект: " << intellect << endl;
-	};
+	}
 
 	~Paladin()
 	{
-		// TODO сделать посмешнее хех
-		cout << "Отправился к праотцам..." << endl;
+		cout << name
+			<< " увидел свет в конце тоннеля..."
+			<< " но оказалось, это экран загрузки."
+			<< endl;
 	}
 };
 
-// Дружественный класс Хранит или принимает аргументом экземпляр другого класса
-// благодаря этому может использовать его поля и методы (даже защищенные);
+
 class Player
 {
 	private:
@@ -285,25 +284,32 @@ class Player
 			currentCharacter->Create();
 		}
 
-		unique_ptr <NPC> GetCharacter()
+		NPC* GetCharacter()
 		{
-			return move(currentCharacter);
+			return currentCharacter.get();
 		}
 };
+
+// Дружественный класс Хранит или принимает аргументом экземпляр другого класса
+// благодаря этому может использовать его поля и методы (даже защищенные);
 
 // Дружественная функ. дает доступ к полям, даже если они private функции,
 // обязателен прототип с ключевым словом friend внутри самого класа и
 // не является частью самого класса.
-void TakeDamage(unique_ptr<NPC> npc, unsigned int damage)
+void TakeDamage(NPC* npc, unsigned int damage)
 {
-	npc->health -= damage;
-	cout << "Вы получили " << damage << " едениц урона!\n";
-	cout << "Ваше текущее здоровье: " << npc->health << "HP\n";
+	if (damage >= npc->health)
+		npc->health = 0;
+	else
+		npc->health -= damage;
+
+	cout << "Вы получили " << damage << " единиц урона!\n";
+	cout << "Ваше текущее здоровье: " << npc->health << " HP\n";
 }
 
 int main()
 {
-	setlocale(LC_ALL, "Rus");
+	//setlocale(LC_ALL, "Rus");
 	SetConsoleCP(CP_UTF8);
 	SetConsoleOutputCP(CP_UTF8);
 
@@ -314,9 +320,6 @@ int main()
 	cout << "\t1 - Войн\n\t2 - Волшебник\n\t3 - паладин" << endl;
 	short choise = 0;
 	cout << ">> ", cin >> choise;
-
-	// TODO: валидация выбора (лучше сунуть в функцию)
-	// TODO: поправить за косяком препода хех
 
 	switch (choise)
 	{
@@ -334,7 +337,7 @@ int main()
 
 	default:
 		cout << "Таких героев нет,тебя не звали!\n";
-		break;
+		return 0;
 	}
 
 	TakeDamage(player.GetCharacter(), 5);
