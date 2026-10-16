@@ -127,10 +127,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Evil.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NPC.cpp" />
+    <ClCompile Include="Paladin.cpp" />
+    <ClCompile Include="Warrior.cpp" />
+    <ClCompile Include="Wizard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="notepad.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Evil.h" />
+    <ClInclude Include="NPC.h" />
+    <ClInclude Include="Paladin.h" />
+    <ClInclude Include="Warrior.h" />
+    <ClInclude Include="Wizard.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
