@@ -127,10 +127,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CharacterFactory.cpp" />
     <ClCompile Include="Evil.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Paladin.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Warrior.cpp" />
     <ClCompile Include="Wizard.cpp" />
   </ItemGroup>
@@ -138,9 +140,13 @@
     <Text Include="notepad.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CharacterFactory.h" />
     <ClInclude Include="Evil.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Paladin.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerClass.h" />
     <ClInclude Include="Warrior.h" />
     <ClInclude Include="Wizard.h" />
   </ItemGroup>

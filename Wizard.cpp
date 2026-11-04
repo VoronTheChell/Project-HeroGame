@@ -6,6 +6,8 @@ using namespace std;
 
 Wizard::Wizard()
 {
+	className = "волшебника";
+
 	Spell spell;
 
 	spell.damage = 2;
