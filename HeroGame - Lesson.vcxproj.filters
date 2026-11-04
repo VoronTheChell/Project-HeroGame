@@ -42,6 +42,9 @@
     <ClCompile Include="CharacterFactory.cpp">
       <Filter>Исходные файлы\Classes</Filter>
     </ClCompile>
+    <ClCompile Include="WeaponQuality.cpp">
+      <Filter>Исходные файлы\Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="notepad.txt" />
@@ -72,6 +75,9 @@
       <Filter>Исходные файлы\Classes</Filter>
     </ClInclude>
     <ClInclude Include="CharacterFactory.h">
+      <Filter>Исходные файлы\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponQuality.h">
       <Filter>Исходные файлы\Classes</Filter>
     </ClInclude>
   </ItemGroup>

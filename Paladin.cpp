@@ -9,7 +9,7 @@ using namespace std;
 
 Paladin::Paladin()
 {
-	className = "паладина";
+	className = "паладин";
 
 	intellect = 25;
 	strength = 19;

@@ -5,7 +5,7 @@ using namespace std;
 
 Warrior::Warrior()
 {
-	className = "воина";
+	className = "воин";
 
 	damage = 20;
 	health = 30;

@@ -5,6 +5,7 @@
 
 #include "GameState.h"
 #include "PlayerClass.h"
+#include "WeaponQuality.h"
 
 #include "NPC.h"
 #include "Player.h"
@@ -17,7 +18,7 @@
 
 using namespace std;
 
-// Game v0.0.6.7 - 29.10.2026
+// Game v0.0.6.9-a - 04.11.2026
 
 int main()
 {
@@ -43,31 +44,26 @@ int main()
 
 				PlayerClass playerClass = static_cast<PlayerClass>(choise);
 				
-				switch (playerClass)
+				if (player.Create(playerClass))
 				{
-					case PlayerClass::Warrior:
-						player.Create(make_unique<Warrior>());
-						state = GameState::MainMenu;
-						break;
+					// Выбор качества оружия (DEBUG)
+					WeaponQuality quality = ChooseWeaponQuality();
 
-					case PlayerClass::Wizard:
-						player.Create(make_unique<Wizard>());
-						state = GameState::MainMenu;
-						break;
+					ShowWeaponQualityInfo(quality);
 
-					case PlayerClass::Paladin:
-						player.Create(make_unique<Paladin>());
-						state = GameState::MainMenu;
-						break;
+					cout << "Числовое значение качества: "
+						<< static_cast<int>(quality)
+						<< endl;
 
-					default:
-						cout << "Таких героев нет,тебя не звали!\n";
-						break;
+					state = GameState::MainMenu;
 				}
 
-				state = GameState::MainMenu;
-
-				break;
+				else
+				{
+					cout << "Таких героев нет,тебя не звали!\n";
+					state = GameState::MainMenu;
+				}
+				
 			}
 
 			case GameState::MainMenu:
@@ -76,8 +72,11 @@ int main()
 
 				cout << "1 - Сюжет\n";
 				cout << "2 - Характеристики\n";
-				cout << "3 - Выход\n";
+				cout << "3 - Создать нового персонажа (DEBUG)\n";
+				cout << "4 - Выход\n";
+
 				short choise = 0;
+
 				cout << ">> ";
 				cin >> choise;
 				switch (choise)
@@ -89,8 +88,12 @@ int main()
 					case 2:
 						state = GameState::CharacterInfo;
 						break;
-
+					
 					case 3:
+						state = GameState::CharacterCreation;
+						break;
+
+					case 4:
 						state = GameState::Exit;
 						break;
 

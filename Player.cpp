@@ -1,13 +1,19 @@
 #include "Player.h"
-
+#include "CharacterFactory.h"
 #include <utility>
 
 using namespace std;
 
-void Player::Create(unique_ptr <NPC> player)
+bool Player::Create(PlayerClass playerClass)
 {
-	currentCharacter = move(player);
+	currentCharacter = CharacterFactory::CreateCharacter(playerClass);
+	
+	if (currentCharacter == nullptr)
+		return false;
+	
 	currentCharacter->Create();
+
+	return true;
 }
 
 NPC* Player::GetCharacter()

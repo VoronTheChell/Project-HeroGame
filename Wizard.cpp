@@ -6,7 +6,7 @@ using namespace std;
 
 Wizard::Wizard()
 {
-	className = "волшебника";
+	className = "волшебник";
 
 	Spell spell;
 
